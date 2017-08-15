@@ -19,7 +19,7 @@ bg2.height = 690;
 
 //==platform image ====
 var platform = new Image();
-platform.src = "images/platform.png";
+platform.src = "images/platforms.png";
 platform.width = 170;
 platform.height = 20;
 //==end platform image ===
@@ -279,7 +279,7 @@ function update(){
 
       player.grounded = false;
       for(var i=0; i < boxes.length; i++) {
-      ctx.rect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
+      ctx.drawImage(platform, boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
        if (boxes[i].cereal){
          if(boxes[i].cerealDrawn !== ""){
         ctx.drawImage(boxes[i].cerealDrawn,boxes[i].x+70, boxes[i].y-40, 40, 40);
@@ -328,7 +328,7 @@ function update(){
       }
 
       for(var i=0; i < boxes.length; i++) {
-      ctx.rect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
+      // ctx.rect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
 
         var dir = collisionCheck(player, boxes[i]);
 
