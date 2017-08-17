@@ -210,12 +210,6 @@ function boxScrollBottom(){
 setTimeout(function(){
   actualScrollingBottom();
 }, 5000);
-setTimeout(function(){
-  alert("You're pretty useless try again!");
-  isPaused = true;
-  clearInterval(boxScroll);
-
-}, 10000);
 }
 boxScrollBottom();
 
@@ -261,6 +255,10 @@ $('#pause').on('click',function(){
 
 
 function update(){
+  if(player.y > 715){
+    alert("You suck!");
+    location.reload(true);
+  }
 //checking player and boxes[i] y position
 
   for(i=0; i < boxes.length; i++ ){
