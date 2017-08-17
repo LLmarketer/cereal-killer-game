@@ -39,9 +39,26 @@ h2 {
   font-family: 'Vast Shadow', cursive;
 }
 
-p{
-  font-family: 'Vast Shadow', cursive;
-}
+ol {
+   list-style: none;
+ }
+ li {
+   counter-increment: item;
+   margin-bottom: 5px;
+   font-family: 'Vast Shadow', cursive;
+ }
+ li:before {
+   margin-right: 10px;
+   font-family: 'Vast Shadow', cursive;
+   font-size: 25px;
+   content: counter(item);
+   background: #62BBC1;
+   border-radius: 100%;
+   color: white;
+   width: 1.2em;
+   text-align: center;
+   display: inline-block;
+ }
 
 #form-control {
   width: 50%;
