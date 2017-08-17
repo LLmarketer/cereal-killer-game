@@ -7,6 +7,13 @@
     window.requestAnimationFrame = requestAnimationFrame;
 })();
 
+window.cancelAnimationFrame =
+    window.cancelAnimationFrame ||
+    window.mozCancelAnimationFrame ||
+    function(requestID){
+      clearInterval(requestID);
+    };
+
 //==background image ====
 var bg = new Image();
 bg.src = "images/cereal-game-bg2.jpg";
@@ -48,9 +55,11 @@ lucky_charms_image.src = 'images/lucky-charms.png';
 //score
 var score = 0;
 
+var dir;
+
 //marshmallow array
 var marshmallow_array = [heart_image,horse_paw_image,moon_image,rainbow_image,lucky_charms_image];
-
+var isPaused = false;
 var randomCereal;
 var randomMarshmallow;
 var randomImage;
@@ -83,12 +92,13 @@ keys = [];
 friction = 0.8;
 gravity= 0.3;
 
-
+var alertBox = false;
 
 
 //collision boxes
 var boxes =[];
 var outlineInCanvas = [];
+var outlineInCanvasBottom = [];
 
 //difference between canvas width and box width
 var boxCreationLimit = parseInt(canvas.width - (boxes.width/2));
@@ -96,7 +106,7 @@ var boxCreationLimit = parseInt(canvas.width - (boxes.width/2));
 
 //below we push 3 boxes into the array.
 //below limit
-outlineInCanvas.push({
+outlineInCanvasBottom.push({
   x:0,
   y:700,
   width: width,
@@ -196,6 +206,20 @@ var boxScroll = setInterval (function (){
   actualScrolling();
 }, 30);
 
+function boxScrollBottom(){
+setTimeout(function(){
+  actualScrollingBottom();
+}, 5000);
+setTimeout(function(){
+  alert("You're pretty useless try again!");
+  isPaused = true;
+  clearInterval(boxScroll);
+
+}, 10000);
+}
+boxScrollBottom();
+
+
 //platform scrolling logic
 function actualScrolling(){
 for(var i=0; i<boxes.length; i++){
@@ -209,6 +233,33 @@ for(var i=0; i<boxes.length; i++){
 }
 
 
+//bottomplatform logic
+function actualScrollingBottom(){
+  setInterval (function (){
+  outlineInCanvasBottom[0].y+=1;
+  console.log('canvas is scrolling');
+  }, 100);
+}
+
+
+//  pause function
+$('#pause').on('click',function(){
+  isPaused= !isPaused;
+  if (isPaused){
+    $("#pause").text("Resume");
+    clearInterval(boxScroll);
+  } else {
+    $("#pause").text("Pause");
+    boxScroll = setInterval (function (){
+      actualScrolling();
+    }, 30);
+  }
+  console.log('pause click');
+});
+
+
+
+
 function update(){
 //checking player and boxes[i] y position
 
@@ -220,7 +271,6 @@ function update(){
 
         if (number == 4){
           randomCereal = true;
-          console.log("cereal please");
           randomMarshmallow = Math.floor(Math.random()* marshmallow_array.length);
           randomImage = (marshmallow_array[randomMarshmallow]);
         } else {
@@ -297,24 +347,7 @@ function update(){
 
      }
 
-    //  if (dir === "l") {
-    //    console.log('cereal collison left');
-     //
-    //  } else if (dir === "r") {
-    //    console.log('cereal collison right');
-    //  }
-     //
-    //   else if (dir === "b") {
-    //    console.log('cereal collison bottom');
-    //         // player.grounded = true;
-    //         // player.jumping = false;
-    //     } else if (dir === "t") {
-    //       console.log('cereal collison top');
-    //         // player.velY *= -1;
-    //     }
-    //     // end of player - cerealcollision check
-
-        var dir = collisionCheck(player, boxes[i]);
+         dir = collisionCheck(player, boxes[i]);
 
         if (dir === "l" || dir === "r") {
                player.velX = 0;
@@ -327,10 +360,10 @@ function update(){
            }
       }
 
-      for(var i=0; i < boxes.length; i++) {
+      for(var x=0; x < boxes.length; x++) {
       // ctx.rect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
 
-        var dir = collisionCheck(player, boxes[i]);
+        var dir = collisionCheck(player, boxes[x]);
 
         if (dir === "l" || dir === "r") {
                player.velX = 0;
@@ -344,10 +377,10 @@ function update(){
       }
 
 // draw  the outline and check for collisions
-      for(var i=0; i < outlineInCanvas.length; i++) {
-      ctx.rect(outlineInCanvas[i].x, outlineInCanvas[i].y, outlineInCanvas[i].width, outlineInCanvas[i].height);
+      for(var n=0; n < outlineInCanvas.length; n++) {
+      ctx.rect(outlineInCanvas[n].x, outlineInCanvas[n].y, outlineInCanvas[n].width, outlineInCanvas[n].height);
 
-        var dir = collisionCheck(player, outlineInCanvas[i]);
+         dir = collisionCheck(player, outlineInCanvas[n]);
 
         if (dir === "l" || dir === "r") {
                player.velX = 0;
@@ -360,6 +393,21 @@ function update(){
            }
       }
 
+// draw  the outline and check for collisions at bottom
+
+      ctx.rect(outlineInCanvasBottom[0].x, outlineInCanvasBottom[0].y, outlineInCanvasBottom[0].width, outlineInCanvasBottom[0].height);
+
+         dir = collisionCheck(player, outlineInCanvasBottom[0]);
+
+        if (dir === "l" || dir === "r") {
+               player.velX = 0;
+               player.jumping = false;
+           } else if (dir === "b") {
+               player.grounded = true;
+               player.jumping = false;
+           } else if (dir === "t") {
+               player.velY *= -1;
+           }
 
 
       if(player.grounded){
@@ -373,11 +421,11 @@ function update(){
 
       ctx.fill(); //fill is a method that fills the current drawing path with platforms.
 
-      console.log("avatar please!");
       ctx.drawImage(avatar_image,player.x,player.y, player.width, player.height);
 
 
     requestAnimationFrame(update);
+
   }
 //====end of update function=====
 
@@ -420,7 +468,9 @@ function update(){
     // ctx.save();
     // ctx.clearRect(0,0, canvas.width, canvas.height);
     // background.render();
+    if (!isPaused){
     background.scrollBackground();
+  }
   }
 
 //====end backgorund function=====
@@ -502,22 +552,18 @@ function cerealCollisionCheck(shapeA, shapeB){
     return colDir;
 }
 
+
 //refresh button
 $("#restart").on('click', function(){
   console.log("restart button has been clicked!");
   location.reload(true);
 });
 
-//pause button
-$("#pause").on('click',function(){
-  var $this = $(this);
-  $this.toggleClass('#pause btn-primary');
-    if($this.hasClass('#pause btn-primary')){
-        $this.text('Pause');
-    } else {
-        $this.text('Resume');
-    }
-});
+
+
+
+
+
 
 document.body.addEventListener("keydown", function(e) {
   var permittedKeys = [38,32,87,39,68,37,65];

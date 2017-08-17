@@ -92,7 +92,7 @@ keys = [];
 friction = 0.8;
 gravity= 0.3;
 
-
+var alertBox = false;
 
 
 //collision boxes
@@ -210,8 +210,15 @@ function boxScrollBottom(){
 setTimeout(function(){
   actualScrollingBottom();
 }, 5000);
+setTimeout(function(){
+  alert("You're pretty useless try again!");
+  isPaused = true;
+  clearInterval(boxScroll);
+
+}, 10000);
 }
 boxScrollBottom();
+
 
 //platform scrolling logic
 function actualScrolling(){
@@ -224,6 +231,7 @@ for(var i=0; i<boxes.length; i++){
   }
 }
 }
+
 
 //bottomplatform logic
 function actualScrollingBottom(){

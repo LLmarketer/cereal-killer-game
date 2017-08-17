@@ -89,3 +89,10 @@ p{
       outline-style: solid;
       border: 3px solid black;
 }
+
+.prompt  {
+    width: 300px;
+    height: 500px;
+    background: black;
+    color: #FFA500;
+}
