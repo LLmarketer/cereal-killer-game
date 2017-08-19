@@ -219,9 +219,9 @@ function actualScrolling(){
 for(var i=0; i<boxes.length; i++){
   boxes[i].y += 1.5;
   if (score > 3){
-    boxes[i].y += 2;
+    boxes[i].y += 1.8;
   }else if (score > 70) {
-    boxes[i].y += 2.2;
+    boxes[i].y += 2;
   }
 }
 }
